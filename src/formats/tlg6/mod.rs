@@ -142,6 +142,7 @@ impl Tlg6 {
                         self.header.colors,
                     )?;
                 }
+                pixels.increment_offsets();
             }
         }
 

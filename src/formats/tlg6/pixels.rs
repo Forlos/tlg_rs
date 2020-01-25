@@ -139,7 +139,6 @@ impl Pixels {
                 pixel_buf_index = (pixel_buf_index as i64 - (odd_skip * ww) * 4) as usize;
             }
         }
-        self.increment_offsets();
         Ok(())
     }
 }

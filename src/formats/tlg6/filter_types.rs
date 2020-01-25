@@ -78,6 +78,8 @@ impl Tlg6FilterTypes {
                 state_index &= 0xFFF;
             }
         }
+        // Initialize rest of vector with zeros
+        output.extend(vec![0; output_size - output.len()]);
 
         output
     }
