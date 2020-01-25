@@ -7,6 +7,10 @@ Convert images to and from TLG image format
 ** Supported actions
 - [X] TLG to Png
 - [ ] Png to TLG
+** Installation
+#+BEGIN_SRC bash
+cargo install --git https://github.com/forlos/tlg_rs.git --branch master
+#+END_SRC
 ** Usage
 #+BEGIN_SRC bash
 tlg [flags] <paths>
