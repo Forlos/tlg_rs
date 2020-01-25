@@ -1,3 +1,4 @@
+#![allow(clippy::many_single_char_names)]
 use scroll::{self, Pread, LE};
 
 const TLG6_GOLOMB_N_COUNT: usize = 4;
@@ -8,7 +9,7 @@ const LEADING_ZERO_TABLE_SIZE: usize = 1 << LEADING_ZERO_TABLE_BITS;
 lazy_static! {
     static ref LEADING_ZERO_TABLE: [u8; LEADING_ZERO_TABLE_SIZE] = {
         let mut table = [0u8; LEADING_ZERO_TABLE_SIZE];
-        for i in 0..LEADING_ZERO_TABLE_SIZE {
+        for (i, item) in table.iter_mut().enumerate() {
             let mut count = 0;
             let mut j = 1;
             while j != LEADING_ZERO_TABLE_SIZE && (i & j) == 0 {
@@ -19,7 +20,7 @@ lazy_static! {
             if j == LEADING_ZERO_TABLE_SIZE {
                 count = 0;
             }
-            table[i] = count;
+            *item = count;
         }
         table
     };
@@ -31,10 +32,10 @@ lazy_static! {
             [2, 5, 12, 21, 39, 86, 155, 320, 384],
             [2, 3, 9, 18, 33, 61, 129, 258, 511],
         ];
-        for n in 0..TLG6_GOLOMB_N_COUNT {
+        for (n, row) in golomb_compression_table.iter().enumerate() {
             let mut a = 0;
-            for i in 0..9 {
-                for _ in 0..golomb_compression_table[n][i] {
+            for (i, item) in row.iter().enumerate() {
+                for _ in 0..*item {
                     table[a][n] = i as u8;
                     a += 1;
                 }
@@ -48,7 +49,7 @@ pub fn decode_golomb(
     input_buf: &mut [u8],
     pixel_count: usize,
     bit_pool: &[u8],
-) -> Result<(), scroll::Error> {
+) -> Result<(), failure::Error> {
     let mut n: i32 = TLG6_GOLOMB_N_COUNT as i32 - 1;
     let mut a: i32 = 0;
     let mut bit_pos: u32 = 1;
@@ -87,7 +88,7 @@ pub fn decode_golomb(
                 input_buf_index += 4;
 
                 count -= 1;
-                if count <= 0 {
+                if count == 0 {
                     break 'zero_loop;
                 }
             }
@@ -133,7 +134,7 @@ pub fn decode_golomb(
                 }
 
                 count -= 1;
-                if count <= 0 {
+                if count == 0 {
                     break 'non_zero_loop;
                 }
             }

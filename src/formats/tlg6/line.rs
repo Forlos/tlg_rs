@@ -6,7 +6,8 @@ pub(crate) struct Tlg6Line {
 }
 
 impl<'a> ctx::TryFromCtx<'a, usize> for Tlg6Line {
-    type Error = scroll::Error;
+    type Error = failure::Error;
+    #[inline]
     fn try_from_ctx(this: &'a [u8], size: usize) -> Result<(Self, usize), Self::Error> {
         let offset = &mut 0;
         let mut bits = Vec::with_capacity(size);
@@ -25,7 +26,8 @@ pub(crate) struct Tlg6Bits {
 }
 
 impl<'a> ctx::TryFromCtx<'a, scroll::Endian> for Tlg6Bits {
-    type Error = scroll::Error;
+    type Error = failure::Error;
+    #[inline]
     fn try_from_ctx(this: &'a [u8], _: scroll::Endian) -> Result<(Self, usize), Self::Error> {
         let size = this.pread_with::<u32>(0, LE)?;
         let length = if size % 8 == 0 {

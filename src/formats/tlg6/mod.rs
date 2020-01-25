@@ -8,7 +8,7 @@ mod transformers;
 use super::tlg6::{
     filter_types::Tlg6FilterTypes, header::TLG6Header, line::Tlg6Line, pixels::Pixels,
 };
-use crate::formats::constants::{TLG6_H_BLOCK_SIZE, TLG6_MAGIC, TLG6_W_BLOCK_SIZE, TLG_MAGIC_SIZE};
+use crate::formats::constants::{TLG6_H_BLOCK_SIZE, TLG6_W_BLOCK_SIZE, TLG_MAGIC_SIZE};
 use crate::golomb::decode_golomb;
 
 use image::{ImageBuffer, RgbaImage};
@@ -24,19 +24,13 @@ pub struct Tlg6 {
 
 impl Tlg6 {
     /// Get new TLG6 instance from file
-    pub fn from_file(file_name: &str) -> std::io::Result<Self> {
+    pub fn from_file(file_name: &str) -> Result<Self, failure::Error> {
         let mut contents: Vec<u8> = Vec::with_capacity(1 << 20);
         File::open(file_name)?.read_to_end(&mut contents)?;
-        if contents[0..TLG_MAGIC_SIZE] != TLG6_MAGIC {
-            println!("Not a TLG file: {:?}", file_name);
-            println!("Invalid magic: {:?}", &contents[0..TLG_MAGIC_SIZE]);
-            // TODO handle this
-            panic!();
-        }
-        Ok(Tlg6::from_bytes(&contents).unwrap())
+        Ok(Tlg6::from_bytes(&contents)?)
     }
     /// Get new TLG6 instance from bytes
-    pub fn from_bytes(buf: &[u8]) -> Result<Self, scroll::Error> {
+    pub fn from_bytes(buf: &[u8]) -> Result<Self, failure::Error> {
         let offset = &mut TLG_MAGIC_SIZE;
         let header = buf.gread_with::<TLG6Header>(offset, LE)?;
         let filter_types = buf.gread_with::<Tlg6FilterTypes>(offset, LE)?;
@@ -56,7 +50,7 @@ impl Tlg6 {
         })
     }
     /// Convert TLG6 to RGBA image
-    pub fn to_rgba_image(&self) -> Result<RgbaImage, scroll::Error> {
+    pub fn to_rgba_image(&self) -> Result<RgbaImage, failure::Error> {
         let mut pixels = Pixels::new(
             4 * self.header.image_width as usize * self.header.image_height as usize,
             self.header.image_width as usize * 4,
@@ -106,7 +100,7 @@ impl Tlg6 {
                         skip_bytes,
                         &pixel_buf[start * 4..],
                         if self.header.colors == 3 {
-                            0xFF000000
+                            0xFF00_0000
                         } else {
                             0
                         },
@@ -133,7 +127,7 @@ impl Tlg6 {
                         skip_bytes,
                         &pixel_buf[start * 4..],
                         if self.header.colors == 3 {
-                            0xFF000000
+                            0xFF00_0000
                         } else {
                             0
                         },

@@ -27,7 +27,8 @@ pub(crate) struct Tlg6FilterTypes {
 }
 
 impl<'a> ctx::TryFromCtx<'a, scroll::Endian> for Tlg6FilterTypes {
-    type Error = scroll::Error;
+    type Error = failure::Error;
+    #[inline]
     fn try_from_ctx(this: &'a [u8], _: scroll::Endian) -> Result<(Self, usize), Self::Error> {
         let size = this.pread_with::<u32>(0, LE)?;
         let buf = this[4..size as usize + 4].to_vec();

@@ -1,7 +1,12 @@
 [package]
 name = "tlg_rs"
+categories = ["command-line-utilities", "image"]
+description="Convert to and from tlg images"
+readme = "README.org"
 version = "0.1.0"
 authors = ["forlos <forlos@disroot.org>"]
+homepage = "https://github.com/forlos/tlg_rs"
+repository = "https://github.com/forlos/tlg_rs"
 edition = "2018"
 
 [dependencies]
@@ -11,6 +16,8 @@ lazy_static = "1.4.0"
 byteorder = "1.3.2"
 structopt = "0.3.8"
 rayon = "1.3.0"
+indicatif = { version = "0.13.0" , features = ["with_rayon"]}
+failure = "0.1.6"
 
 [profile.dev]
 opt-level = 1

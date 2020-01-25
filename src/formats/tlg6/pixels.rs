@@ -1,3 +1,4 @@
+#![allow(clippy::many_single_char_names)]
 use super::{
     super::constants::TLG6_W_BLOCK_SIZE,
     math::{avg, med},
@@ -23,15 +24,18 @@ impl Pixels {
         }
     }
 
+    #[inline]
     pub(crate) fn increment_offsets(&mut self) {
         self.cur_index += self.difference;
         self.prev_index = self.cur_index - self.difference;
     }
 
+    #[inline]
     pub(crate) fn get_cur_line(&mut self) -> &mut [u8] {
         &mut self.buf[self.cur_index..]
     }
 
+    #[inline]
     pub(crate) fn get_prev_line(&self) -> &[u8] {
         &self.buf[self.prev_index..]
     }
@@ -48,7 +52,7 @@ impl Pixels {
         odd_skip: i64,
         dir: usize,
         colors: u8,
-    ) -> Result<(), scroll::Error> {
+    ) -> Result<(), failure::Error> {
         let mut p = initialp;
         let mut up = p;
 
@@ -70,7 +74,12 @@ impl Pixels {
         pixel_buf_index += (skip_block_bytes * start_block) * 4;
         let step = if dir & 1 != 0 { 1 } else { -1 };
 
-        for i in start_block..block_limit {
+        for (i, item) in filter_types
+            .iter()
+            .enumerate()
+            .take(block_limit)
+            .skip(start_block)
+        {
             let mut w: i64 = width as i64 - i as i64 * TLG6_W_BLOCK_SIZE as i64;
             if w > TLG6_W_BLOCK_SIZE as i64 {
                 w = TLG6_W_BLOCK_SIZE as i64;
@@ -83,7 +92,7 @@ impl Pixels {
                 pixel_buf_index = (pixel_buf_index as i64 + (odd_skip * ww) * 4) as usize;
             }
 
-            let filter_fn = if (filter_types[i] & 1) != 0 { avg } else { med };
+            let filter_fn = if (item & 1) != 0 { avg } else { med };
 
             'pixel_loop: loop {
                 let a = pixel_buf[pixel_buf_index + 3];
@@ -91,7 +100,7 @@ impl Pixels {
                 let mut g = pixel_buf[pixel_buf_index + 1];
                 let mut b = pixel_buf[pixel_buf_index];
 
-                transform(&mut r, &mut g, &mut b, filter_types[i] >> 1);
+                transform(&mut r, &mut g, &mut b, item >> 1);
                 let u = self
                     .get_prev_line()
                     .pread_with::<u32>(prev_line_index, LE)?;
@@ -99,14 +108,11 @@ impl Pixels {
                     p,
                     u,
                     up,
-                    (0xFF0000 & ((b as u32) << 16))
-                        + (0xFF00 & (g as u32) << 8)
-                        + (0xFF & r as u32)
-                        + ((a as u32) << 24),
+                    ((b as u32) << 16) + ((g as u32) << 8) + (r as u32) + ((a as u32) << 24),
                 );
 
                 if colors == 3 {
-                    p |= 0xFF000000;
+                    p |= 0xFF00_0000;
                 }
 
                 up = u;

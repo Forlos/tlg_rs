@@ -1,12 +1,25 @@
 * TLG_rs
 Convert images to and from TLG image format
 ** Supported TLG versions
-- [ ] TLG0.0
+- [X] TLG0.0
 - [ ] TLG5.0
 - [X] TLG6.0
 ** Supported actions
 - [X] TLG to Png
 - [ ] Png to TLG
+** Usage
+#+BEGIN_SRC bash
+tlg [flags] <paths>
+#+END_SRC
+*** Example
+- Convert one file
+#+BEGIN_SRC bash
+tlg tlg_file1.tlg
+#+END_SRC
+- Convert all tlg files in directory
+#+BEGIN_SRC bash
+tlg directory/*.tlg
+#+END_SRC
 ** References
 - https://github.com/krkrz/krkrz/blob/master/visual/LoadTLG.cpp
 - https://github.com/vn-tools/tlg2png
