@@ -1,0 +1,13 @@
+* TLG_rs
+Convert images to and from TLG image format
+** Supported TLG versions
+- [ ] TLG0.0
+- [ ] TLG5.0
+- [X] TLG6.0
+** Supported actions
+- [X] TLG to Png
+- [ ] Png to TLG
+** References
+- https://github.com/krkrz/krkrz/blob/master/visual/LoadTLG.cpp
+- https://github.com/vn-tools/tlg2png
+- https://github.com/zhiyb/png2tlg
