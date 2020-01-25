@@ -55,9 +55,9 @@ impl Tlg6FilterTypes {
                 let x1 = self.buf[index];
                 index += 1;
                 let mut position: u32 = (x0 as u32) | (((x1 & 0xF) as u32) << 8);
-                let mut length = 3 + ((x1 & 0xF0) >> 4);
+                let mut length: usize = 3 + ((x1 as usize & 0xF0) >> 4);
                 if length == 18 {
-                    length += self.buf[index];
+                    length += self.buf[index] as usize;
                     index += 1;
                 }
                 for _ in 0..length {

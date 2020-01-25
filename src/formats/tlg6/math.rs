@@ -21,7 +21,7 @@ pub(crate) fn med(a: u32, b: u32, c: u32, v: u32) -> u32 {
 
 fn packed_bytes_add(a: u32, b: u32) -> u32 {
     a.wrapping_add(b)
-        .wrapping_sub((((a & b) << 1) + ((a ^ b) & 0xFEFEFEFE)) & 0x01010100)
+        .wrapping_sub(((a & b) << 1).wrapping_add((a ^ b) & 0xFEFEFEFE) & 0x01010100)
 }
 
 fn gt_mask(a: u32, b: u32) -> u32 {

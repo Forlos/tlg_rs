@@ -83,11 +83,7 @@ impl Pixels {
                 pixel_buf_index = (pixel_buf_index as i64 + (odd_skip * ww) * 4) as usize;
             }
 
-            let filter_fn = if (filter_types.get(i).unwrap_or(&0) & 1) != 0 {
-                avg
-            } else {
-                med
-            };
+            let filter_fn = if (filter_types[i] & 1) != 0 { avg } else { med };
 
             'pixel_loop: loop {
                 let a = pixel_buf[pixel_buf_index + 3];
@@ -95,12 +91,7 @@ impl Pixels {
                 let mut g = pixel_buf[pixel_buf_index + 1];
                 let mut b = pixel_buf[pixel_buf_index];
 
-                transform(
-                    &mut r,
-                    &mut g,
-                    &mut b,
-                    filter_types.get(i).unwrap_or(&0) >> 1,
-                );
+                transform(&mut r, &mut g, &mut b, filter_types[i] >> 1);
                 let u = self
                     .get_prev_line()
                     .pread_with::<u32>(prev_line_index, LE)?;

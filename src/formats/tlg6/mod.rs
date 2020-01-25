@@ -13,9 +13,7 @@ use crate::golomb::decode_golomb;
 
 use image::{ImageBuffer, RgbaImage};
 use scroll::{self, Pread, LE};
-use std::fs::File;
-use std::io::Read;
-use std::path::PathBuf;
+use std::{fs::File, io::Read};
 
 #[derive(Debug)]
 pub struct Tlg6 {
@@ -26,20 +24,22 @@ pub struct Tlg6 {
 
 impl Tlg6 {
     /// Get new TLG6 instance from file
-    pub fn from_file(file_name: &PathBuf) -> std::io::Result<Self> {
+    pub fn from_file(file_name: &str) -> std::io::Result<Self> {
         let mut contents: Vec<u8> = Vec::with_capacity(1 << 20);
         File::open(file_name)?.read_to_end(&mut contents)?;
         if contents[0..TLG_MAGIC_SIZE] != TLG6_MAGIC {
             println!("Not a TLG file: {:?}", file_name);
+            println!("Invalid magic: {:?}", &contents[0..TLG_MAGIC_SIZE]);
+            // TODO handle this
             panic!();
         }
-        Ok(Tlg6::from_bytes(contents))
+        Ok(Tlg6::from_bytes(&contents).unwrap())
     }
     /// Get new TLG6 instance from bytes
-    pub fn from_bytes(buf: Vec<u8>) -> Self {
+    pub fn from_bytes(buf: &[u8]) -> Result<Self, scroll::Error> {
         let offset = &mut TLG_MAGIC_SIZE;
-        let header = buf.gread_with::<TLG6Header>(offset, LE).unwrap();
-        let filter_types = buf.gread_with::<Tlg6FilterTypes>(offset, LE).unwrap();
+        let header = buf.gread_with::<TLG6Header>(offset, LE)?;
+        let filter_types = buf.gread_with::<Tlg6FilterTypes>(offset, LE)?;
         let lines_count = if header.image_height as usize % TLG6_H_BLOCK_SIZE == 0 {
             header.image_height as usize / TLG6_H_BLOCK_SIZE
         } else {
@@ -47,13 +47,13 @@ impl Tlg6 {
         };
         let mut lines = Vec::with_capacity(lines_count);
         for _ in 0..lines_count {
-            lines.push(buf.gread_with(offset, header.colors as usize).unwrap())
+            lines.push(buf.gread_with(offset, header.colors as usize)?)
         }
-        Self {
+        Ok(Self {
             header,
             filter_types,
             lines,
-        }
+        })
     }
     /// Convert TLG6 to RGBA image
     pub fn to_rgba_image(&self) -> Result<RgbaImage, scroll::Error> {
@@ -79,7 +79,7 @@ impl Tlg6 {
 
             for (c, bits) in line.bits.iter().enumerate() {
                 match bits.method {
-                    0 => decode_golomb(&mut pixel_buf[c..], pixel_count, &bits.bit_pool).unwrap(),
+                    0 => decode_golomb(&mut pixel_buf[c..], pixel_count, &bits.bit_pool)?,
                     _ => unimplemented!(),
                 }
             }

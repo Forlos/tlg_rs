@@ -4,3 +4,6 @@
 # Images
 *.tlg
 *.png
+
+# Other
+*.txt
