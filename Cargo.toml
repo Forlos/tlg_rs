@@ -11,13 +11,13 @@ edition = "2018"
 
 [dependencies]
 scroll = { version = "0.10.1", features = ["derive"] }
-image = "0.22.4"
+image = "0.23.6"
 lazy_static = "1.4.0"
-byteorder = "1.3.2"
-structopt = "0.3.8"
-rayon = "1.3.0"
-indicatif = { version = "0.13.0" , features = ["with_rayon"]}
-failure = "0.1.6"
+byteorder = "1.3.4"
+structopt = "0.3.15"
+rayon = "1.3.1"
+indicatif = { version = "0.15.0" , features = ["with_rayon"]}
+failure = "0.1.8"
 
 [profile.dev]
 opt-level = 1
