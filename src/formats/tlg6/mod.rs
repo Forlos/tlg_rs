@@ -24,13 +24,13 @@ pub struct Tlg6 {
 
 impl Tlg6 {
     /// Get new TLG6 instance from file
-    pub fn from_file(file_name: &str) -> Result<Self, failure::Error> {
+    pub fn from_file(file_name: &str) -> anyhow::Result<Self> {
         let mut contents: Vec<u8> = Vec::with_capacity(1 << 20);
         File::open(file_name)?.read_to_end(&mut contents)?;
         Ok(Tlg6::from_bytes(&contents)?)
     }
     /// Get new TLG6 instance from bytes
-    pub fn from_bytes(buf: &[u8]) -> Result<Self, failure::Error> {
+    pub fn from_bytes(buf: &[u8]) -> anyhow::Result<Self> {
         let offset = &mut TLG_MAGIC_SIZE;
         let header = buf.gread_with::<TLG6Header>(offset, LE)?;
         let filter_types = buf.gread_with::<Tlg6FilterTypes>(offset, LE)?;
@@ -50,7 +50,7 @@ impl Tlg6 {
         })
     }
     /// Convert TLG6 to RGBA image
-    pub fn to_rgba_image(&self) -> Result<RgbaImage, failure::Error> {
+    pub fn to_rgba_image(&self) -> anyhow::Result<RgbaImage> {
         let mut pixels = Pixels::new(
             4 * self.header.image_width as usize * self.header.image_height as usize,
             self.header.image_width as usize * 4,
@@ -146,5 +146,8 @@ impl Tlg6 {
             pixels.buf,
         )
         .unwrap())
+    }
+    pub fn to_bytes(&self) -> anyhow::Result<Vec<u8>> {
+        Ok(self.to_rgba_image()?.into_raw())
     }
 }

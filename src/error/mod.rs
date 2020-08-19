@@ -1,7 +1,7 @@
-use failure::Fail;
+use thiserror::Error;
 
-#[derive(Fail, Debug)]
+#[derive(Debug, Error)]
 pub enum Error {
-    #[fail(display = "{}", _0)]
+    #[error("{0}")]
     ParseError(String),
 }

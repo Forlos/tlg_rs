@@ -1,5 +1,5 @@
 #[inline]
-pub fn transform(r: &mut u8, g: &mut u8, b: &mut u8, index: u8) {
+pub(crate) fn transform(r: &mut u8, g: &mut u8, b: &mut u8, index: u8) {
     match index {
         0 => {}
         1 => {

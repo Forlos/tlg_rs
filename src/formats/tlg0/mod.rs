@@ -18,7 +18,7 @@ enum TlgRawData {
 }
 
 impl<'a> ctx::TryFromCtx<'a, usize> for TlgRawData {
-    type Error = failure::Error;
+    type Error = anyhow::Error;
     fn try_from_ctx(buf: &'a [u8], _: usize) -> Result<(Self, usize), Self::Error> {
         let offset = &mut 0;
         let mut magic = [0; TLG_MAGIC_SIZE];
@@ -35,12 +35,12 @@ impl<'a> ctx::TryFromCtx<'a, usize> for TlgRawData {
 }
 
 impl Tlg0 {
-    pub fn from_file(file_name: &str) -> Result<Self, failure::Error> {
+    pub fn from_file(file_name: &str) -> anyhow::Result<Self> {
         let mut contents: Vec<u8> = Vec::with_capacity(1 << 20);
         File::open(file_name)?.read_to_end(&mut contents)?;
         Ok(Tlg0::from_bytes(&contents)?)
     }
-    pub fn from_bytes(buf: &[u8]) -> Result<Self, failure::Error> {
+    pub fn from_bytes(buf: &[u8]) -> anyhow::Result<Self> {
         let offset = &mut TLG_MAGIC_SIZE;
         let raw_length = buf.gread_with::<u32>(offset, LE)?;
         let raw_data = buf.gread_with::<TlgRawData>(offset, raw_length as usize)?;
@@ -49,9 +49,12 @@ impl Tlg0 {
             raw_data,
         })
     }
-    pub fn to_rgba_image(&self) -> Result<RgbaImage, failure::Error> {
+    pub fn to_rgba_image(&self) -> anyhow::Result<RgbaImage> {
         match &self.raw_data {
             TlgRawData::Tlg6 { data } => data.to_rgba_image(),
         }
+    }
+    pub fn to_bytes(&self) -> anyhow::Result<Vec<u8>> {
+        Ok(self.to_rgba_image()?.into_raw())
     }
 }

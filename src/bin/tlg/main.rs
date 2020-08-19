@@ -1,7 +1,3 @@
-extern crate indicatif;
-extern crate rayon;
-extern crate structopt;
-
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rayon::prelude::*;
 use std::convert::TryInto;
@@ -23,7 +19,7 @@ struct Opt {
     verbose: bool,
 }
 
-fn main() -> Result<(), failure::Error> {
+fn main() -> anyhow::Result<()> {
     let opt = Opt::from_args();
     let progress_bar = init_progressbar(&opt);
     opt.files

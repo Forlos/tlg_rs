@@ -40,6 +40,7 @@ impl Pixels {
         &self.buf[self.prev_index..]
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn decode_line(
         &mut self,
         width: u32,
@@ -52,7 +53,7 @@ impl Pixels {
         odd_skip: i64,
         dir: usize,
         colors: u8,
-    ) -> Result<(), failure::Error> {
+    ) -> anyhow::Result<()> {
         let mut p = initialp;
         let mut up = p;
 

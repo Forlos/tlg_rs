@@ -1,9 +1,10 @@
-extern crate byteorder;
-extern crate image;
-#[macro_use]
-extern crate lazy_static;
-extern crate failure;
-extern crate scroll;
+#![deny(
+    rust_2018_idioms,
+    unreachable_pub,
+    unsafe_code,
+    unused_imports,
+    missing_debug_implementations
+)]
 
 pub mod error;
 pub mod formats;

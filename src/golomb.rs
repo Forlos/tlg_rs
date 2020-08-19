@@ -1,4 +1,5 @@
 #![allow(clippy::many_single_char_names)]
+use lazy_static::lazy_static;
 use scroll::{self, Pread, LE};
 
 const TLG6_GOLOMB_N_COUNT: usize = 4;
@@ -45,11 +46,11 @@ lazy_static! {
     };
 }
 
-pub fn decode_golomb(
+pub(crate) fn decode_golomb(
     input_buf: &mut [u8],
     pixel_count: usize,
     bit_pool: &[u8],
-) -> Result<(), failure::Error> {
+) -> anyhow::Result<()> {
     let mut n: i32 = TLG6_GOLOMB_N_COUNT as i32 - 1;
     let mut a: i32 = 0;
     let mut bit_pos: u32 = 1;

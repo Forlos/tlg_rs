@@ -1,3 +1,4 @@
+use lazy_static::lazy_static;
 use scroll::{self, ctx, Pread, LE};
 
 lazy_static! {
@@ -27,7 +28,7 @@ pub(crate) struct Tlg6FilterTypes {
 }
 
 impl<'a> ctx::TryFromCtx<'a, scroll::Endian> for Tlg6FilterTypes {
-    type Error = failure::Error;
+    type Error = anyhow::Error;
     #[inline]
     fn try_from_ctx(this: &'a [u8], _: scroll::Endian) -> Result<(Self, usize), Self::Error> {
         let size = this.pread_with::<u32>(0, LE)?;
